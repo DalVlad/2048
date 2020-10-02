@@ -1,11 +1,52 @@
+import random
+import os
+import msvcrt
+
+
+def control():
+    while True:
+        while True:
+            entry = msvcrt.getch()
+            if entry == b'd':
+                start_check(1)
+                return
+            elif entry == b'a':
+                start_check(-1)
+                return
+            elif entry == b'w':
+                start_check(2)
+                return
+            elif entry == b's':
+                start_check(-2)
+                return
+
+
 def output():
     for i in range(4):
         print()
+        print(end=" ")
         for j in range(4):
             if play_field[i][j] == 0:
-                print(end="- ")
+                print(end="-    ")
+            elif play_field[i][j] > 10:
+                print(play_field[i][j], end="   ")
             else:
-                print(play_field[i][j], end=" ")
+                print(play_field[i][j], end="    ")
+        print("\n")
+
+
+def number_generator():
+    while True:
+        x = random.randint(0, 3)
+        y = random.randint(0, 3)
+        if play_field[x][y] == 0:
+            number = random.randint(0, 100)
+            if number <= 90:
+                play_field[x][y] = 2
+                return
+            else:
+                play_field[x][y] = 4
+                return
 
 
 def shift_field(i, x):
@@ -38,36 +79,40 @@ def shift_field(i, x):
 def comparison(i, j, x):  # Нахождение пары в строке
     if x == 1:  # right
         for w in range(j - 1, -1, -1):
-            if play_field[i][w] != 0 and play_field[i][w] == play_field[i][j]:
-                play_field[i][j] *= 2
-                play_field[i][w] = 0
+            if play_field[i][w] != 0:
+                if play_field[i][w] == play_field[i][j]:
+                    play_field[i][j] *= 2
+                    play_field[i][w] = 0
+                    return
                 return
-            else:
-                return
+        return
     elif x == -1:  # left
         for w in range(j + 1, 4, 1):
-            if play_field[i][w] != 0 and play_field[i][w] == play_field[i][j]:
-                play_field[i][j] *= 2
-                play_field[i][w] = 0
+            if play_field[i][w] != 0:
+                if play_field[i][w] == play_field[i][j]:
+                    play_field[i][j] *= 2
+                    play_field[i][w] = 0
+                    return
                 return
-            else:
-                return
+        return
     elif x == 2:  # up
         for w in range(j + 1, 4, 1):
-            if play_field[w][i] != 0 and play_field[w][i] == play_field[j][i]:
-                play_field[j][i] *= 2
-                play_field[w][i] = 0
+            if play_field[w][i] != 0:
+                if play_field[w][i] == play_field[j][i]:
+                    play_field[j][i] *= 2
+                    play_field[w][i] = 0
+                    return
                 return
-            else:
-                return
+        return
     elif x == -2:  # down
-        for w in range(j - 1, 4, 1):
-            if play_field[w][i] != 0 and play_field[w][i] == play_field[j][i]:
-                play_field[j][i] *= 2
-                play_field[w][i] = 0
+        for w in range(j - 1, -1, -1):
+            if play_field[w][i] != 0:
+                if play_field[w][i] == play_field[j][i]:
+                    play_field[j][i] *= 2
+                    play_field[w][i] = 0
+                    return
                 return
-            else:
-                return
+        return
 
 
 def check(i, x):  # Перебор строк
@@ -98,35 +143,25 @@ def start_check(x):  # Перебор столбцов
         for i in range(4):
             check(i, x)
             shift_field(i, x)
-    elif x == 2:    # up
+    elif x == 2:  # up
         for i in range(4):
             check(i, x)
             shift_field(i, x)
-    elif x == -2:   # down
+    elif x == -2:  # down
         for i in range(4):
             check(i, x)
             shift_field(i, x)
 
-
-# x = int(input())
 
 play_field = [
-    [2, 2, 2, 4],
-    [2, 4, 4, 2],
-    [4, 4, 2, 4],
-    [2, 2, 4, 4]
+    [0, 2, 0, 2],
+    [0, 0, 0, 4],
+    [0, 0, 0, 2],
+    [2, 0, 0, 0]
 ]
 
 while True:
-
+    number_generator()
     output()
-
-    control = str.lower(input())
-    if control == 'd':
-        start_check(1)
-    elif control == 'a':
-        start_check(-1)
-    elif control == 'w':
-        start_check(2)
-    elif control == 's':
-        start_check(-2)
+    control()
+    os.system("cls")
